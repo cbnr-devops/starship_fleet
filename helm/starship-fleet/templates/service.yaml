@@ -8,4 +8,4 @@ spec:
     app: starship-fleet
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: 3000
+      targetPort: 8000

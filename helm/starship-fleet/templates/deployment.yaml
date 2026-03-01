@@ -17,17 +17,17 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 3000
+            - containerPort: 8000
           livenessProbe:
             httpGet:
               path: /live
-              port: 3000
+              port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /ready
-              port: 3000
+              port: 8000
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
