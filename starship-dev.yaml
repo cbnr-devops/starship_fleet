@@ -24,4 +24,4 @@ spec:
         image: starshipfleetacr.azurecr.io/starship-fleet:latest
 
         ports:
-        - containerPort: 3000
+        - containerPort: 8000
