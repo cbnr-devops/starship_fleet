@@ -1,0 +1,110 @@
+<html>
+   <head>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@900&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=BioRhyme&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+      <meta name='viewport' content='width=device-width, initial-scale=1'>
+      <title>Starship Fleet</title>
+      <style>
+         body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a1a;
+            background-image:
+               radial-gradient(white 1px, transparent 1px),
+               radial-gradient(white 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            min-height: 100vh;
+            margin: 0;
+         }
+         #starshipImage {
+            background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/uss_enterprise_%28ncc-1701-a%29_by_rekkert-d9syg4c.png/1200px-uss_enterprise_%28ncc-1701-a%29_by_rekkert-d9syg4c.png') center center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            content: '';
+            position: static;
+            animation: float 6s ease-in-out infinite;
+            width: 50vw;
+            height: 50vw;
+         }
+         @keyframes float {
+            0%   { transform: translateY(0px) rotate(0deg); }
+            50%  { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+         }
+      </style>
+   </head>
+   <body>
+
+      <div>
+        <div>
+         <a href="index.html">
+            <button
+               style="font-size: 40px;
+                   background: linear-gradient(90deg, rgba(10,10,60,1) 0%, rgba(20,10,80,1) 50%, rgba(10,30,100,1) 100%);
+                   color: #00cfff;
+                   font-family: 'Orbitron', sans-serif;
+                   border-radius: 25px;
+                   border: 2px solid #00cfff;
+                   width: 600px;
+                   height: 70px;
+                   text-align: center;
+                   line-height: initial;
+                   border-width: 1px 1px 3px;
+                   text-shadow: 0 0 10px #00cfff;
+                   box-shadow: 0 0 20px rgba(0,207,255,0.3);">
+               STARSHIP <i class="fa fa-rocket"></i> FLEET 1.0
+            </button>
+         </a>
+        </div>
+        <br>
+         <input type="submit" id="submit" value="Search the Starship"
+         style="float: right;
+             background-color: rgba(0,100,200,0.8);
+             color: #00cfff;
+             font-family: 'Ubuntu';
+             border-radius: 25px;
+             border: 2px solid #00cfff;
+             padding: 20px;
+             width: 200px;
+             text-align: center;
+             cursor: pointer;" />
+         <div style="overflow: hidden; padding-right: .5em;">
+            <input type="number" id="starshipID" name="number"
+            style="width: 100%;
+            background-color: rgba(10,10,40,0.9);
+            color: #cce6ff;
+            text-align: center;
+            border-radius: 25px;
+            border: 2px solid #00cfff;
+            padding: 20px;"
+            placeholder="Enter a number (1 - 8) to view the starships"/>
+         </div>
+         <div class="middle">
+            <h1 style="color: #ff9f43; font-family: 'Encode Sans';" id="starshipName"> Starship Fleet </h1>
+         </div>
+         <div class="bottomleft">
+            <p style="color: rgb(200,220,255); font-family: 'Ubuntu';" id="starshipDescription">
+               The Starship Fleet spans galaxies, fiction, and imagination. <br>
+               Choose a vessel — from the Federation's finest to smugglers' pride — <br>
+               and discover the story behind each legendary ship that has <br>
+               captured the hearts of explorers across the universe.
+            </p>
+         </div>
+         <br>
+         <div class="middle">
+            <h2 style="color: #5d96ed; font-family: 'BioRhyme';" id="hostname">Starship Fleet Pod Name</h2>
+         </div>
+      </div>
+      <div id="starshipImage">
+      </div>
+      <script type="text/javascript" src="/app-controller.js" charset="utf-8"></script>
+   </body>
+</html>

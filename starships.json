@@ -1,0 +1,66 @@
+[
+    {
+        "id": 1,
+        "name": "USS Enterprise",
+        "description": "The USS Enterprise (NCC-1701) is the most iconic starship in the Federation fleet. A Constitution-class heavy cruiser, it was commanded by Captain James T. Kirk on its historic five-year mission to explore strange new worlds. With a crew of 430, it is equipped with advanced warp drive, photon torpedoes, and defensive shields.",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/uss_enterprise_%28ncc-1701-a%29_by_rekkert-d9syg4c.png/1200px-uss_enterprise_%28ncc-1701-a%29_by_rekkert-d9syg4c.png",
+        "speed": "Warp 8",
+        "range": "Unlimited"
+    },
+    {
+        "id": 2,
+        "name": "Millennium Falcon",
+        "description": "The Millennium Falcon is a heavily modified YT-1300f light freighter, most famously piloted by Han Solo and Chewbacca. Though it looks like a piece of junk, it is one of the fastest ships in the galaxy, capable of making the Kessel Run in less than twelve parsecs. It played a key role in the Galactic Civil War.",
+        "image": "https://upload.wikimedia.org/wikipedia/en/e/e1/Millennium_Falcon_1.png",
+        "speed": "0.5 past lightspeed",
+        "range": "Galactic"
+    },
+    {
+        "id": 3,
+        "name": "Serenity",
+        "description": "Serenity is a Firefly-class mid-bulk transport, registry number 404-E-132-4F5. She is a junker vessel, yet resilient and reliable, captained by Malcolm Reynolds. Carrying a crew of nine, she drifts through the outer planets of a star system, taking any job — legal or otherwise — to stay airborne and free from the Alliance.",
+        "image": "https://upload.wikimedia.org/wikipedia/en/f/f3/Serenity_%28Firefly%29.jpg",
+        "speed": "Burn 4G acceleration",
+        "range": "System-wide"
+    },
+    {
+        "id": 4,
+        "name": "Nostromo",
+        "description": "The USCSS Nostromo (registration number 180924609) is a Weyland-Yutani commercial towing vehicle classified as a Class M starfreighter. Pulling a massive ore refinery, it was crewed by seven personnel. Its ill-fated voyage after responding to a distress signal on LV-426 led to one of the most infamous encounters with extraterrestrial life ever recorded.",
+        "image": "https://upload.wikimedia.org/wikipedia/en/b/b3/Nostromo_%28spacecraft%29.jpg",
+        "speed": "Orbital cruise",
+        "range": "Interstellar"
+    },
+    {
+        "id": 5,
+        "name": "Battlestar Galactica",
+        "description": "The Battlestar Galactica (BS-75) is a Galactica-class battlestar of the Colonial Fleet. One of the oldest battlestars still in service at the time of the Cylon attack, it survived the fall of the Twelve Colonies and led a ragtag fleet of survivors on a desperate search for a new home — the fabled Thirteenth Colony known as Earth.",
+        "image": "https://upload.wikimedia.org/wikipedia/en/5/5d/Battlestar_Galactica_%28miniseries%29.jpg",
+        "speed": "FTL Jump capable",
+        "range": "Colonial sectors"
+    },
+    {
+        "id": 6,
+        "name": "Heart of Gold",
+        "description": "The Heart of Gold is the most advanced spacecraft in the universe, equipped with the revolutionary Infinite Improbability Drive. Built by the Magratheans and stolen by Zaphod Beeblebrox, it can travel anywhere in the universe in an instant while simultaneously passing through every point in every universe that has ever existed — with highly improbable side effects.",
+        "image": "https://upload.wikimedia.org/wikipedia/en/c/c2/Hitchhikers_guide_to_the_galaxy.jpg",
+        "speed": "Infinite Improbability",
+        "range": "Infinite"
+    },
+    {
+        "id": 7,
+        "name": "Rocinante",
+        "description": "The Rocinante (registration MCRN Tachi) is a Martian Congressional Republic Navy corvette-class light frigate later claimed by its crew and re-registered as a civilian vessel. Capable of high-G burns using the Epstein drive, she punches well above her class with torpedo tubes and a railgun. Her crew of four navigates the complex politics of the solar system.",
+        "image": "https://upload.wikimedia.org/wikipedia/en/1/18/The_Expanse_season_1_poster.jpg",
+        "speed": "Epstein drive, 10G burn",
+        "range": "Solar system"
+    },
+    {
+        "id": 8,
+        "name": "Event Horizon",
+        "description": "The Event Horizon is an experimental spacecraft built in secret by Dr. William Weir, featuring a revolutionary gravity drive that folds space-time to travel faster than light. On her maiden voyage in 2040, she vanished near Neptune only to reappear seven years later with her entire crew missing. The drive had taken the ship to a dimension of pure chaos and evil.",
+        "image": "https://upload.wikimedia.org/wikipedia/en/7/79/Event_horizon_ver2.jpg",
+        "speed": "FTL via gravity drive",
+        "range": "Extradimensional"
+    }
+]

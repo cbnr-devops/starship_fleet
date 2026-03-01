@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: starship-app-staging
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: starship-staging
+
+  template:
+    metadata:
+      labels:
+        app: starship-staging
+
+    spec:
+      containers:
+
+      - name: starship
+
+        image: starshipfleetacr.azurecr.io/starship-fleet:latest
+
+        ports:
+        - containerPort: 3000

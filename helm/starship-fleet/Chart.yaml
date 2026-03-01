@@ -1,0 +1,6 @@
+apiVersion: v2
+name: starship-fleet
+description: Starship Fleet Python FastAPI App
+type: application
+version: 0.1.0
+appVersion: "1.0"
