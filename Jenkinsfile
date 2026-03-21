@@ -20,25 +20,25 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                installDependencies()
+                installDependencies('pip install -r requirements.txt')
             }
         }
 
         stage('OWASP Scan') {
             steps {
-                owaspScan()
+                owaspScan(IMAGE_NAME)
             }
         }
 
         stage('Unit Test') {
             steps {
-                unitTest()
+                unitTest('pytest')
             }
         }
 
         stage('SonarQube scan') {
             steps {
-                sonarScan()
+                sonarScan(IMAGE_NAME)
             }
         }
 
@@ -72,7 +72,9 @@ pipeline {
                     "dev-cluster",
                     AWS_REGION,
                     "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}",
-                    "dev"
+                    "dev",
+                    "starship",
+                    "./helm/starship-fleet"
                 )
             }
         }
@@ -91,7 +93,9 @@ pipeline {
                     "staging-cluster",
                     AWS_REGION,
                     "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}",
-                    "staging"
+                    "staging",
+                    "starship",
+                    "./helm/starship-fleet"
                 )
             }
         }
