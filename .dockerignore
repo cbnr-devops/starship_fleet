@@ -1,0 +1,16 @@
+__pycache__
+.pytest_cache
+.git
+.cache
+*.md
+!README*.md
+htmlcov
+coverage.xml
+test-results.xml
+reports*
+terraform/
+helm/
+starship-dev*.yaml
+starship-staging*.yaml
+starship-servicemonitor.yaml
+Jenkinsfile

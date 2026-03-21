@@ -1,0 +1,6 @@
+__pycache__
+.pytest_cache
+htmlcov
+coverage.xml
+.nyc_output
+test-results.xml

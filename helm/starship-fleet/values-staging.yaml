@@ -1,6 +1,6 @@
-replicaCount: 1
+replicaCount: 2
 
-app: starship-fleet
+app: starship-staging
 
 image:
   repository: ""

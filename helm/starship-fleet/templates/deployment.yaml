@@ -6,11 +6,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: starship-fleet
+      app: {{ .Values.app }}
   template:
     metadata:
       labels:
-        app: starship-fleet
+        app: {{ .Values.app }}
     spec:
       containers:
         - name: starship-fleet
