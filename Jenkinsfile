@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'ap-southeast-2'
-        AWS_ACCOUNT_ID = '424322298246'
+        AWS_ACCOUNT_ID = '312018064574'
         IMAGE_NAME = 'starship-fleet'
         IMAGE_TAG = "${BUILD_NUMBER}"
         ECR_REPO = 'starship-fleet'
