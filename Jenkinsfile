@@ -4,8 +4,6 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = 'ap-southeast-2'
-        AWS_ACCOUNT_ID = '424322298246'
         IMAGE_NAME = 'starship-fleet'
         IMAGE_TAG = "${BUILD_NUMBER}"
         ECR_REPO = 'starship-fleet'
@@ -18,9 +16,9 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Set AWS Environment') {
             steps {
-                installDependencies('pip install -r requirements.txt')
+                awsEnv()
             }
         }
 
@@ -32,7 +30,7 @@ pipeline {
 
         stage('Unit Test') {
             steps {
-                unitTest('pytest')
+                sh "docker build --target test -t ${IMAGE_NAME}:test ."
             }
         }
 
@@ -50,7 +48,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dockerBuild(IMAGE_NAME, IMAGE_TAG)
+                dockerBuild(IMAGE_NAME, IMAGE_TAG, 'server')
             }
         }
 
