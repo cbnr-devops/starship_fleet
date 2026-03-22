@@ -18,12 +18,6 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                installDependencies('pip install -r requirements.txt')
-            }
-        }
-
         stage('OWASP Scan') {
             steps {
                 owaspScan(IMAGE_NAME)
@@ -32,7 +26,7 @@ pipeline {
 
         stage('Unit Test') {
             steps {
-                unitTest('pytest')
+                sh "docker build --target test -t ${IMAGE_NAME}:test ."
             }
         }
 
@@ -50,7 +44,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dockerBuild(IMAGE_NAME, IMAGE_TAG)
+                dockerBuild(IMAGE_NAME, IMAGE_TAG, 'server')
             }
         }
 
