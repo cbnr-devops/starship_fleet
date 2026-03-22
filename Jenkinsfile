@@ -78,6 +78,9 @@ pipeline {
         }
 
         stage('Approval') {
+            when {
+                branch 'main'
+            }
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
                     input message: "Deploy to STAGING environment?"
@@ -86,6 +89,9 @@ pipeline {
         }
 
         stage('Deploy to Staging Environment') {
+            when {
+                branch 'main'
+            }
             steps {
                 deployEKS(
                     "staging-cluster",
