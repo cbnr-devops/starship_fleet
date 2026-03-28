@@ -10,9 +10,13 @@ resources:
       name: ado-templates-repo
 
 variables:
-  IMAGE_NAME: starship-fleet
-  IMAGE_TAG: $(Build.BuildId)
-  ACR_NAME: youracrname
+  - group: security-keys
+  - name: IMAGE_NAME
+    value: starship-fleet
+  - name: IMAGE_TAG
+    value: $(Build.BuildId)
+  - name: ACR_NAME
+    value: youracrname
 
 stages:
 
@@ -25,6 +29,8 @@ stages:
       steps:
         - template: templates/checkout.yml@templates
         - template: templates/owasp.yml@templates
+          parameters:
+            nvdApiKey: $(NVD-API-KEY)
 
         - template: templates/docker-build.yml@templates
           parameters:
