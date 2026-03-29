@@ -9,6 +9,9 @@ resources:
       type: github
       name: cbnr-devops/AZDO-templates
       endpoint: cbnr-devops
+      type: github
+      name: cbnr-devops/AZDO-templates
+      endpoint: cbnr-devops
 
 variables:
   - group: security-keys
@@ -17,7 +20,7 @@ variables:
   - name: IMAGE_TAG
     value: $(Build.BuildId)
   - name: ACR_NAME
-    value: youracrname
+    value: skssolar
 
 stages:
 
@@ -25,7 +28,7 @@ stages:
   jobs:
     - job: BuildJob
       pool:
-        vmImage: ubuntu-latest
+        name: "sample-project"
 
       steps:
         - template: templates/checkout.yml@templates
@@ -40,6 +43,10 @@ stages:
             target: test
 
         - template: templates/sonar.yml@templates
+          parameters:
+            projectKey: 'sks-solar-project_starfleet'
+            projectName: 'starfleet'
+
         - template: templates/quality-gate.yml@templates
 
         - template: templates/docker-build.yml@templates
@@ -65,12 +72,12 @@ stages:
   jobs:
     - job: DeployDev
       pool:
-        vmImage: ubuntu-latest
+        name: "sample-project"
       steps:
         - template: templates/deploy.yml@templates
           parameters:
             aksCluster: dev-cluster
-            resourceGroup: dev-rg
+            resourceGroup: central-dev-rg
             acrName: $(ACR_NAME)
             imageName: $(IMAGE_NAME)
             tag: $(IMAGE_TAG)
@@ -80,7 +87,7 @@ stages:
 
 - stage: Approval
   dependsOn: Deploy_Dev
-  condition: eq(variables['Build.SourceBranchName'], 'main')
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
 
   jobs:
     - job: Wait
@@ -89,22 +96,22 @@ stages:
         - task: ManualValidation@0
           inputs:
             instructions: "Approve deployment to STAGING"
-            timeoutInMinutes: 60
+            timeoutInMinutes: 10
 
 
 - stage: Deploy_Staging
   dependsOn: Approval
-  condition: eq(variables['Build.SourceBranchName'], 'main')
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
 
   jobs:
     - job: DeployStaging
       pool:
-        vmImage: ubuntu-latest
+        name: "sample-project"
       steps:
         - template: templates/deploy.yml@templates
           parameters:
             aksCluster: staging-cluster
-            resourceGroup: staging-rg
+            resourceGroup: central-staging-rg
             acrName: $(ACR_NAME)
             imageName: $(IMAGE_NAME)
             tag: $(IMAGE_TAG)
