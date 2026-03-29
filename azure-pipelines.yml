@@ -9,9 +9,6 @@ resources:
       type: github
       name: cbnr-devops/AZDO-templates
       endpoint: cbnr-devops
-      type: github
-      name: cbnr-devops/AZDO-templates
-      endpoint: cbnr-devops
 
 variables:
   - group: security-keys
