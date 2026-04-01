@@ -5,7 +5,7 @@ window.onload = function() {
     const starship_id = document.getElementById("starshipID").value;
     console.log("onLoad - Request Starship ID - " + starship_id);
 
-    fetch("/os", { method: "GET" })
+    fetch("os", { method: "GET" })
         .then(function(res) {
             if (res.ok) return res.json();
             throw new Error('Request failed');
@@ -27,7 +27,7 @@ function func() {
     const starship_id = document.getElementById("starshipID").value;
     console.log("onClick Submit - Request Starship ID - " + starship_id);
 
-    fetch("/starship", {
+    fetch("starship", {
             method: "POST",
             body: JSON.stringify({ id: parseInt(document.getElementById("starshipID").value) }),
             headers: { "Content-type": "application/json; charset=UTF-8" }
