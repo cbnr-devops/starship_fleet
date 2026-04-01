@@ -1,10 +1,13 @@
 import asyncio
 import json
+import logging
 import os
 import random
 import socket
 import time
 from pathlib import Path
+
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, HTMLResponse
@@ -13,7 +16,18 @@ from pydantic import BaseModel
 from prometheus_client import Counter, Histogram, Gauge, CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
 from starlette.responses import Response
 
-app = FastAPI(title="Starship Fleet")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
+logger = logging.getLogger("starship_fleet")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("starship_fleet starting hostname=%s", socket.gethostname())
+    yield
+
+app = FastAPI(title="Starship Fleet", lifespan=lifespan)
 
 # --- Prometheus metrics ---
 registry = CollectorRegistry(auto_describe=True)
@@ -52,6 +66,10 @@ async def metrics_middleware(request: Request, call_next):
         status_code=str(response.status_code),
     ).observe(duration)
     active_connections.dec()
+    logger.info(
+        "method=%s path=%s status=%s duration=%.3fs",
+        request.method, request.url.path, response.status_code, duration,
+    )
     return response
 
 
@@ -75,11 +93,15 @@ async def index():
 
 @app.post("/starship")
 async def get_starship(payload: StarshipRequest):
+    start = time.time()
     await asyncio.sleep(random.uniform(1, 5))
     starship = next((s for s in starships_data if s["id"] == payload.id), None)
+    duration = time.time() - start
     if starship:
         starship_requests_counter.labels(starship_name=starship["name"]).inc()
+        logger.info("starship_found id=%s name=%s duration=%.3fs", payload.id, starship["name"], duration)
         return JSONResponse(content=starship)
+    logger.warning("starship_not_found id=%s duration=%.3fs", payload.id, duration)
     return JSONResponse(content=None)
 
 
