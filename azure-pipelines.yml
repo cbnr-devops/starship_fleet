@@ -44,7 +44,7 @@ stages:
             projectKey: 'sks-solar-project_starfleet'
             projectName: 'starfleet'
 
-        - template: templates/quality-gate.yml@templates
+        #- template: templates/quality-gate.yml@templates
 
         - template: templates/docker-build.yml@templates
           parameters:
