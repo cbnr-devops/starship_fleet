@@ -33,7 +33,7 @@ class _TraceIdFilter(logging.Filter):
 
 logging.basicConfig(
     level=logging.DEBUG,
-    format="%(asctime)s %(levelname)s %(name)s [trace_id=%(trace_id)s] %(message)s",
+    format="[trace_id=%(trace_id)s] %(asctime)s %(levelname)s %(name)s %(message)s",
 )
 logger = logging.getLogger("starship_fleet")
 logger.addFilter(_TraceIdFilter())
