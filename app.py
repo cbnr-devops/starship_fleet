@@ -1,14 +1,18 @@
 import asyncio
+import contextvars
 import json
 import logging
 import os
 import random
 import socket
 import time
+import uuid
 from pathlib import Path
+from typing import Optional
 
 from contextlib import asynccontextmanager
 
+import psycopg
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -16,14 +20,26 @@ from pydantic import BaseModel
 from prometheus_client import Counter, Histogram, Gauge, CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
 from starlette.responses import Response
 
+# --- Trace ID via contextvars ---
+_trace_id_ctx: contextvars.ContextVar[str] = contextvars.ContextVar("trace_id", default="-")
+
+
+class _TraceIdFilter(logging.Filter):
+    """Injects trace_id into every log record."""
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.trace_id = _trace_id_ctx.get("-")  # type: ignore[attr-defined]
+        return True
+
+
 logging.basicConfig(
     level=logging.DEBUG,
-    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    format="%(asctime)s %(levelname)s %(name)s [trace_id=%(trace_id)s] %(message)s",
 )
 logger = logging.getLogger("starship_fleet")
+logger.addFilter(_TraceIdFilter())
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     logger.info("starship_fleet starting hostname=%s", socket.gethostname())
     logger.debug("loaded %d starships from starships.json", len(starships_data))
     logger.debug("environment=%s", os.environ.get("APP_ENV", "development"))
@@ -56,9 +72,33 @@ active_connections = Gauge(
     registry=registry,
 )
 
+starship_data_source_counter = Counter(
+    "starship_data_source_total",
+    "Number of starship lookups by data source",
+    ["source"],
+    registry=registry,
+)
+
+db_lookup_errors_counter = Counter(
+    "starship_db_lookup_errors_total",
+    "Total number of failed database lookups",
+    registry=registry,
+)
+
+db_lookup_duration = Histogram(
+    "starship_db_lookup_duration_seconds",
+    "Duration of database lookups in seconds",
+    buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1],
+    registry=registry,
+)
+
 
 @app.middleware("http")
 async def metrics_middleware(request: Request, call_next):
+    # Use incoming X-Trace-Id header or generate a new one
+    trace_id = request.headers.get("x-trace-id", uuid.uuid4().hex[:16])
+    _trace_id_ctx.set(trace_id)
+
     active_connections.inc()
     start = time.time()
     logger.debug("request_started method=%s path=%s", request.method, request.url.path)
@@ -96,12 +136,79 @@ async def metrics_middleware(request: Request, call_next):
         )
     if duration > 3:
         logger.warning("slow_request method=%s path=%s duration=%.3fs", request.method, request.url.path, duration)
+    response.headers["X-Trace-Id"] = trace_id
     return response
 
 
-# --- Load static data ---
+# --- Load static data (fallback) ---
 _data_path = Path(__file__).parent / "starships.json"
 starships_data: list[dict] = json.loads(_data_path.read_text())
+
+
+# --- Database helpers ---
+
+def _get_db_connection_info() -> dict | str | None:
+    """Return connection info from environment, or None if not configured."""
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url:
+        return database_url
+
+    user = os.environ.get("POSTGRES_USER")
+    if not user:
+        return None
+
+    return {
+        "host": os.environ.get("POSTGRES_HOST", "localhost"),
+        "port": int(os.environ.get("POSTGRES_PORT", "5432")),
+        "dbname": os.environ.get("POSTGRES_DB", "starship_fleet"),
+        "user": user,
+        "password": os.environ.get("POSTGRES_PASSWORD", ""),
+    }
+
+
+def fetch_starship_from_db(starship_id: int) -> Optional[dict]:
+    """Query PostgreSQL for a starship by id. Returns None on any failure."""
+    info = _get_db_connection_info()
+    if info is None:
+        logger.warning("db_not_configured — falling back to JSON")
+        db_lookup_errors_counter.inc()
+        return None
+
+    start = time.time()
+    try:
+        logger.debug("db_lookup_start id=%s", starship_id)
+        if isinstance(info, str):
+            conn = psycopg.connect(info)
+        else:
+            conn = psycopg.connect(**info)
+
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    'SELECT id, name, description, image, speed, "range" FROM starships WHERE id = %s',
+                    (starship_id,),
+                )
+                row = cur.fetchone()
+                duration = time.time() - start
+                db_lookup_duration.observe(duration)
+                if row is None:
+                    logger.info("db_lookup_miss id=%s duration=%.3fs", starship_id, duration)
+                    return None
+                logger.info("db_lookup_hit id=%s name=%s duration=%.3fs", starship_id, row[1], duration)
+                return {
+                    "id": row[0],
+                    "name": row[1],
+                    "description": row[2],
+                    "image": row[3],
+                    "speed": row[4],
+                    "range": row[5],
+                }
+    except Exception as exc:
+        duration = time.time() - start
+        db_lookup_duration.observe(duration)
+        db_lookup_errors_counter.inc()
+        logger.error("db_lookup_failed id=%s error=%s duration=%.3fs", starship_id, exc, duration)
+        return None
 
 
 # --- Request/Response models ---
@@ -122,13 +229,24 @@ async def get_starship(payload: StarshipRequest):
     start = time.time()
     logger.debug("starship_lookup_start id=%s", payload.id)
     await asyncio.sleep(random.uniform(1, 5))
-    starship = next((s for s in starships_data if s["id"] == payload.id), None)
+
+    # Try database first
+    starship = fetch_starship_from_db(payload.id)
+    source = "db"
+
+    # Fall back to JSON file if DB lookup failed
+    if starship is None:
+        logger.info("db_fallback id=%s reason=db_returned_none", payload.id)
+        starship = next((s for s in starships_data if s["id"] == payload.id), None)
+        source = "json"
+
     duration = time.time() - start
     if starship:
+        starship_data_source_counter.labels(source=source).inc()
         starship_requests_counter.labels(starship_name=starship["name"]).inc()
-        logger.info("starship_found id=%s name=%s duration=%.3fs", payload.id, starship["name"], duration)
+        logger.info("starship_found id=%s name=%s source=%s duration=%.3fs", payload.id, starship["name"], source, duration)
         return JSONResponse(content=starship)
-    logger.warning("starship_not_found id=%s duration=%.3fs", payload.id, duration)
+    logger.warning("starship_not_found id=%s source=%s duration=%.3fs", payload.id, source, duration)
     if payload.id < 0:
         logger.error("invalid_starship_id id=%s reason=negative_id", payload.id)
     return JSONResponse(content=None)
