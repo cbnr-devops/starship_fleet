@@ -23,5 +23,5 @@ hpa:
   enabled: true
   minReplicas: 2
   maxReplicas: 10
-  cpuUtilization: 50
-  memoryUtilization: 70
+  cpuUtilization: 5
+  memoryUtilization: 20
