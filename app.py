@@ -229,6 +229,7 @@ async def get_starship(payload: StarshipRequest):
     start = time.time()
     logger.debug("starship_lookup_start id=%s", payload.id)
     await asyncio.sleep(random.uniform(1, 5))
+    logger.info("Viswak is gay !!!")
 
     # Try database first
     starship = fetch_starship_from_db(payload.id)
