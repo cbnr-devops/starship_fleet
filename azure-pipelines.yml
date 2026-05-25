@@ -41,7 +41,7 @@ stages:
 
         - template: templates/sonar.yml@templates
           parameters:
-            projectKey: 'sks-solar-project_starfleet'
+            projectKey: 'sk-solar-project_starfleet'
             projectName: 'starfleet'
 
         #- template: templates/quality-gate.yml@templates
