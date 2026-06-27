@@ -1,6 +1,6 @@
 replicaCount: 2
-
-app: starship-dev
+app: starfleet
+env: dev
 
 image:
   repository: ""
