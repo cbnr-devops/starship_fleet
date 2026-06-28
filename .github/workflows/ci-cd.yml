@@ -28,7 +28,7 @@ jobs:
       image_name: starship-fleet
       image_tag: ${{ github.run_number }}
       install_command: pip install -r requirements.txt
-      test_command: npm test
+      test_command: pytest
 
       owasp_enabled: false
       owasp_project_name: starship-fleet
