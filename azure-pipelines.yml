@@ -80,6 +80,8 @@ stages:
             tag: $(IMAGE_TAG)
             namespace: dev
             helmPath: ./helm/starship-fleet
+            wait: true
+            atomic: true
 
 
 - stage: Approval
@@ -114,3 +116,5 @@ stages:
             tag: $(IMAGE_TAG)
             namespace: staging
             helmPath: ./helm/starship-fleet
+            wait: true
+            atomic: true
