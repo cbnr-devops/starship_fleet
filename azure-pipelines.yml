@@ -80,9 +80,10 @@ stages:
             tag: $(IMAGE_TAG)
             namespace: dev
             helmPath: ./helm/starship-fleet
+            deploymentStrategy: rolling
             wait: true
-            atomic: true
-
+            atomic: false
+            timeout: 5m
 
 - stage: Approval
   dependsOn: Deploy_Dev
@@ -116,5 +117,7 @@ stages:
             tag: $(IMAGE_TAG)
             namespace: staging
             helmPath: ./helm/starship-fleet
+            deploymentStrategy: blueGreen
             wait: true
             atomic: true
+            timeout: 5m

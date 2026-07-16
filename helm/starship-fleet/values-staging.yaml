@@ -1,6 +1,6 @@
 replicaCount: 2
-
-app: starship-staging
+app: starship
+env: staging
 
 image:
   repository: ""
@@ -10,6 +10,18 @@ image:
 service:
   type: ClusterIP
   port: 80
+  labels:
+    tier: backend
+    env: staging
+
+blueGreen:
+  enabled: true
+  activeSlot: blue
+  slots:
+    blue:
+      imageTag: ""
+    green:
+      imageTag: ""
 
 resources:
   limits:

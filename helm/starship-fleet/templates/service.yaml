@@ -4,11 +4,14 @@ metadata:
   name: starship-fleet-service
   labels:
     app: {{ .Values.app }}
-    env: dev
+    env: {{ .Values.env }}
 spec:
   type: {{ .Values.service.type }}
   selector:
     app: {{ .Values.app }}
+    {{- if .Values.blueGreen.enabled }}
+    slot: {{ .Values.blueGreen.activeSlot }}
+    {{- end }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: 8000
