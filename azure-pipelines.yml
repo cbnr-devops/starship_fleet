@@ -80,9 +80,9 @@ stages:
             tag: $(IMAGE_TAG)
             namespace: dev
             helmPath: ./helm/starship-fleet
-            deploymentStrategy: rolling
+            deploymentStrategy: blueGreen
             wait: true
-            atomic: false
+            atomic: true
             timeout: 5m
 
 - stage: Approval
