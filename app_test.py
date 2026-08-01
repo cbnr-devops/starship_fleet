@@ -80,6 +80,9 @@ class TestOtherEndpoints:
         assert res.json()["status"] == "ready"
 
     def test_metrics_endpoint(self):
+        client.get("/live")
         res = client.get("/metrics")
         assert res.status_code == 200
-        assert b"starship_requests_total" in res.content or b"http_request_duration" in res.content
+        assert b"http_requests_total" in res.content
+        assert b'http_requests_total{method="GET",route="/live",service="starship-fleet",status="200"}' in res.content
+        assert b"http_request_duration_seconds_bucket" in res.content

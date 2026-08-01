@@ -13,7 +13,8 @@ spec:
     slot: {{ .Values.blueGreen.activeSlot }}
     {{- end }}
   ports:
-    - port: {{ .Values.service.port }}
+    - name: metrics
+      port: {{ .Values.service.port }}
       targetPort: 8000
 {{- if .Values.blueGreen.enabled }}
 {{- $previewSlot := "green" }}
@@ -34,6 +35,7 @@ spec:
     app: {{ .Values.app }}
     slot: {{ $previewSlot }}
   ports:
-    - port: {{ .Values.service.port }}
+    - name: metrics
+      port: {{ .Values.service.port }}
       targetPort: 8000
 {{- end }}

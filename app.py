@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import contextvars
 import json
@@ -58,10 +60,17 @@ starship_requests_counter = Counter(
     registry=registry,
 )
 
+http_requests_counter = Counter(
+    "http_requests_total",
+    "Total number of HTTP requests",
+    ["service", "method", "route", "status"],
+    registry=registry,
+)
+
 http_request_duration = Histogram(
-    "starship_fleet_http_request_duration_seconds",
+    "http_request_duration_seconds",
     "Duration of HTTP requests in seconds",
-    ["method", "route", "status_code"],
+    ["service", "method", "route", "status"],
     buckets=[0.01, 0.05, 0.1, 0.3, 0.5, 1, 2, 5],
     registry=registry,
 )
@@ -113,11 +122,15 @@ async def metrics_middleware(request: Request, call_next):
         )
         raise
     duration = time.time() - start
-    http_request_duration.labels(
-        method=request.method,
-        route=request.url.path,
-        status_code=str(response.status_code),
-    ).observe(duration)
+    route = request.scope.get("route").path if request.scope.get("route") else request.url.path
+    labels = {
+        "service": "starship-fleet",
+        "method": request.method,
+        "route": route,
+        "status": str(response.status_code),
+    }
+    http_request_duration.labels(**labels).observe(duration)
+    http_requests_counter.labels(**labels).inc()
     active_connections.dec()
     if response.status_code >= 500:
         logger.error(
