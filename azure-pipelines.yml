@@ -19,14 +19,15 @@ variables:
   - name: ACR_NAME
     value: skssolar
 
-stages:
+pool:
+  name: central-infra-mdp
+  demands:
+    - ImageOverride -equals central-custom-linux
 
+stages:
 - stage: Build
   jobs:
     - job: BuildJob
-      pool:
-        name: "sample-project"
-
       steps:
         - template: templates/checkout.yml@templates
         - template: templates/owasp.yml@templates
@@ -39,10 +40,10 @@ stages:
             tag: test
             target: test
 
-        - template: templates/sonar.yml@templates
-          parameters:
-            projectKey: 'sk-solar-project_starfleet'
-            projectName: 'starfleet'
+        #- template: templates/sonar.yml@templates
+        #  parameters:
+        #    projectKey: 'sk-solar-project_starfleet'
+        #    projectName: 'starfleet'
 
         #- template: templates/quality-gate.yml@templates
 
@@ -68,8 +69,6 @@ stages:
   dependsOn: Build
   jobs:
     - job: DeployDev
-      pool:
-        name: "sample-project"
       steps:
         - template: templates/deploy.yml@templates
           parameters:
@@ -83,7 +82,7 @@ stages:
             deploymentStrategy: blueGreen
             wait: true
             atomic: true
-            timeout: 5m
+            timeout: 10m
 
 - stage: Approval
   dependsOn: Deploy_Dev
@@ -105,8 +104,6 @@ stages:
 
   jobs:
     - job: DeployStaging
-      pool:
-        name: "sample-project"
       steps:
         - template: templates/deploy.yml@templates
           parameters:
